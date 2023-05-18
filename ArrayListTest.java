@@ -49,6 +49,13 @@ public class ArrayListTest {
         // 즉 내부적으로 사용되는 array의 index에 고정된 데이터를, 메서드를 통해 list의 기본 전제를 충족시키는 형태로 구현하는 클래스
         // JAVA가 제공하는 pure한 List 형태의 자료형은 존재하지 않는다. 구현할 뿐이다.
 
+        ArrayList<MyObject> objArrayList2 = new ArrayList<>();
+        objArrayList2.add(new MyObject(1, "azuma"));
+        objArrayList2.add(objArray[1]);
+        objArrayList2.add(objList.get(2));
+        objArrayList2.add(objArrayList.get(2));
+
+
 
        for (MyObject obj : objArrayList) {
             System.out.println(obj);
@@ -56,6 +63,22 @@ public class ArrayListTest {
 
         for (int i = 0; i < objArrayList.size(); i++) {
             System.out.println(objArrayList.get(i));
+        }
+
+        System.out.println();
+
+        for (int i = 0; i < objArrayList.size(); i++) {
+            MyObject myObj = objArrayList.get(i);
+            System.out.println(myObj);
+            System.out.println("age : " + myObj.age + " name : " + myObj.name);
+        }
+
+        System.out.println();
+
+        for (int i = 0; i < objArrayList2.size(); i++) {
+            MyObject myObj = objArrayList2.get(i);
+            System.out.println(myObj);
+            System.out.println("age : " + myObj.age + " name : " + myObj.name);
         }
 
     }
