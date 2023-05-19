@@ -232,21 +232,49 @@ a/lang/invoke/CallSite;
        121: pop
             // 여기까지 새로운 ArrayList에 객체 엘리먼트 생성 및 할당 완료
 
+
        122: aload_3
             //Arrays.asList()를 전달받아 생성한 ArrayList
+
        123: invokevirtual #41                 // Method java/util/ArrayList.iterator:()Ljava/util/Iterator;
        126: astore        5
+            // *** ArrayList와 Inhanced-For loop, Iterator의 관계
+            //ArrayList의 인스턴스로 inhanced for loop를 실행 -> 내부적으로 ArrayList의 iterator() 호출 -> new Iter() 반환
+            //Iter.class - ArrayList의 innerClass로 Iterator 인터페이스를 구현하는 클래스
+            //ArrayList에 구현되어있는 iterator() 메서드를 통해 Iterator 인스턴스를 생성하고 저장
+            // *** iterator() 메서드의 반환형은 Iterator<E>의 인터페이스 형임
+
        128: aload         5
        130: invokeinterface #45,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+            //invokeinterface는 Interface의 *Method를 실행시키는 것
+            //즉, Iterator에서 강제한 hasNext() 메서드는 이를 구현한 ArrayList 내부 클래스인 Iter.class에서 구현하고 있으며 이를 찾아 실행시킴
+            //hasNext()는 Iter의 필드인 cursor와 ArrayList의 필드인 size의 크기를 비교한 후 boolean을 반환
+            //실제로 size는 ArrayList의 생성자에서 Collection 자료형을 toArray() 메서드를 통해 배열로 변환 후 length를 할당 받음
+
        135: ifeq          161
+            //ifeq - if value is 0, branch to instruction at branchoffset (signed short constructed from unsigned bytes)
+
        138: aload         5
+            //Iter 인스턴스
+
        140: invokeinterface #51,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+            //1. size와 cursor값 비교 후 outerInstance의 elementData를 Object[] 배열로 받아옴
+            //2. cursor 값 1 증가 (이후 이어질 hasNext()의 연산을 위해)
+            //3. elementData(Object 배열)의 cursor index에 해당하는 객체를 가져와 (E) 타입으로 캐스팅 후 반환
+
        145: checkcast     #7                  // class main/sourcecode/list/MyObject
        148: astore        6
+            //타입 확인 후 LVA에 저장
+
        150: getstatic     #55                 // Field java/lang/System.out:Ljava/io/PrintStream;
        153: aload         6
        155: invokevirtual #61                 // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+            //출력
+
        158: goto          128
+            //for loop를 돌면서 반복
+
+
        161: iconst_0
        162: istore        5
        164: iload         5
@@ -262,6 +290,8 @@ a/lang/invoke/CallSite;
        188: goto          164
        191: getstatic     #55                 // Field java/lang/System.out:Ljava/io/PrintStream;
        194: invokevirtual #71                 // Method java/io/PrintStream.println:()V
+
+
        197: iconst_0
        198: istore        5
        200: iload         5
@@ -285,8 +315,12 @@ a/lang/invoke/CallSite;
        246: invokevirtual #85                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
        249: iinc          5, 1
        252: goto          200
+
+
        255: getstatic     #55                 // Field java/lang/System.out:Ljava/io/PrintStream;
        258: invokevirtual #71                 // Method java/io/PrintStream.println:()V
+
+
        261: iconst_0
        262: istore        5
        264: iload         5
