@@ -1,5 +1,6 @@
 package main.sourcecode.list;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class MySinglyLinkedList<E> {
@@ -39,6 +40,19 @@ public class MySinglyLinkedList<E> {
         }
     }
 
+    public void addLast(E value) {
+        Node<E> last = tail;
+        Node<E> newNode = new Node<>(value, null);
+        size++;
+        tail = newNode;
+
+        if (last == null) {
+            head = newNode;
+        } else {
+            last.next = newNode;
+        }
+    }
+
     public void add(int index, E value) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
@@ -57,19 +71,6 @@ public class MySinglyLinkedList<E> {
         Node<E> newNode = new Node<>(value, nextNode);
         prevNode.next = newNode;
         size++;
-    }
-
-    public void addLast(E value) {
-        Node<E> last = tail;
-        Node<E> newNode = new Node<>(value, null);
-        size++;
-        tail = newNode;
-
-        if (last == null) {
-            head = newNode;
-        } else {
-            last.next = newNode;
-        }
     }
 
     public E removeFirst() {
@@ -206,5 +207,39 @@ public class MySinglyLinkedList<E> {
             this.data = data;
             this.next = next;
         }
+    }
+
+    public E get(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        return search(index).data;
+    }
+
+    public void set(int index, E value) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node<E> replaceNode = search(index);
+        replaceNode.data = null;
+        replaceNode.data = value;
+    }
+
+    @Override
+    public String toString() {
+        if (head == null) {
+            return "[]";
+        }
+        Object[] array = new Object[size];
+
+        int index = 0;
+        Node<E> n = head;
+        while (n != null) {
+            array[index] = (E) n.data;
+            index++;
+            n = n.next;
+        }
+
+        return Arrays.toString(array);
     }
 }

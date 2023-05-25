@@ -1,5 +1,6 @@
 package main.sourcecode.list;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -210,6 +211,40 @@ public class MyDoublyLinkedList<E> {
         size--;
 
         return true;
+    }
+
+    public E get(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        return search(index).data;
+    }
+
+    public void set(int index, E value) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node<E> replaceNode = search(index);
+        replaceNode.data = null;
+        replaceNode.data = value;
+    }
+
+    @Override
+    public String toString() {
+        if (head == null) {
+            return "[]";
+        }
+        Object[] array = new Object[size];
+
+        int index = 0;
+        Node<E> n = head;
+        while (n != null) {
+            array[index] = (E) n.data;
+            n = n.next;
+            index++;
+        }
+
+        return Arrays.toString(array);
     }
 
     private static class Node<E>{
