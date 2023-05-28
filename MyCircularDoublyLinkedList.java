@@ -1,5 +1,7 @@
 package main.sourcecode.list;
 
+import java.util.NoSuchElementException;
+
 public class MyCircularDoublyLinkedList<E> {
     private Node<E> head;
     private Node<E> tail;
@@ -102,6 +104,52 @@ public class MyCircularDoublyLinkedList<E> {
         head.prev = tail;
         // tail    head ... prev -> tail
         last.next = tail;
+    }
+
+    public void add(int index, E value) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index == 0) {
+            addFirst(value);
+            return;
+        }
+        if (index == size) {
+            addLast(value);
+            return;
+        }
+        Node<E> next = efficientSearch(index);
+        Node<E> newNode = new Node<>(next.prev, value, next);
+        next.prev.next = newNode;
+        next.prev = newNode;
+        size++;
+    }
+
+    public E removeLast() {
+        if (head == null || tail == null) {
+            throw new NoSuchElementException();
+        }
+        E data = tail.data;
+        Node<E> prev = tail.prev; //head and tail or prev
+
+        tail.data = null; //head and tail
+        tail.next = null; //head and tail
+        tail.prev = null; //head and tail or prev
+
+        //tail = prev;
+        //Doubly처럼 처리할 경우, Circuly에서 요소가 1개 이상 존재하는 한, prev는 항상 값을 갖고 있으므로 이렇게 처리해주면 안된다
+
+        //기존의 prev 값의 null여부로 분기하는 것이 아닌, size 자체로 분기
+        if (size == 1) {
+            head = null;
+            tail = null;
+        } else {
+            prev.next = head;
+            head.prev = prev;
+        }
+
+        size--;
+        return data;
     }
 
     private static class Node<E>{
