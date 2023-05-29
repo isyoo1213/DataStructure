@@ -1,5 +1,6 @@
 package main.sourcecode.list;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class MyCircularDoublyLinkedList<E> {
@@ -125,6 +126,30 @@ public class MyCircularDoublyLinkedList<E> {
         size++;
     }
 
+    public E removeFirst() {
+        if (head == null || tail == null) {
+            throw new NoSuchElementException();
+        }
+        E data = head.data;
+        Node<E> first = head.next;
+
+        head.data = null;
+        head.next = null;
+        head.prev = null;
+
+        head = first;
+
+        if (head.next == null) {
+            head = null;
+            tail = null;
+        } else {
+            head.prev = tail;
+            tail.next = head;
+        }
+        size--;
+        return data;
+    }
+
     public E removeLast() {
         if (head == null || tail == null) {
             throw new NoSuchElementException();
@@ -136,11 +161,11 @@ public class MyCircularDoublyLinkedList<E> {
         tail.next = null; //head and tail
         tail.prev = null; //head and tail or prev
 
-        //tail = prev;
-        //Doubly처럼 처리할 경우, Circuly에서 요소가 1개 이상 존재하는 한, prev는 항상 값을 갖고 있으므로 이렇게 처리해주면 안된다
+        tail = prev;
 
-        //기존의 prev 값의 null여부로 분기하는 것이 아닌, size 자체로 분기
-        if (size == 1) {
+        // List에 요소가 1개일 경우, tail.prev = null; 이므로, tail 인스턴스를 가리키는 prev(prev == tail.prev == tail)는 prev/next 필드에 null을 가지게 된다
+        // List에 요소가 2개일 경우 prev == head 이므로, prev/next 주소를 여전히 가지고 있다
+        if (tail.prev == null) {
             head = null;
             tail = null;
         } else {
@@ -150,6 +175,90 @@ public class MyCircularDoublyLinkedList<E> {
 
         size--;
         return data;
+    }
+
+    public E remove(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        if (index == 0) {
+            return removeFirst();
+        }
+        if (index == size - 1) {
+            return removeLast();
+        }
+        Node<E> delNode = efficientSearch(index);
+        E data = delNode.data;
+
+        delNode.prev.next = delNode.next;
+        delNode.next.prev = delNode.prev;
+
+        delNode.prev = null;
+        delNode.next = null;
+        delNode.data = null;
+        size--;
+        return data;
+    }
+
+    public E remove(E value) {
+        if (head == null || tail == null) {
+            throw new NoSuchElementException();
+        }
+        Node<E> n = head;
+        while (n != null) {
+            if (n.data == value) {
+                break;
+            }
+            n = n.next;
+        }
+        if (n == null) {
+            throw new NoSuchElementException();
+        }
+        if (n == head) {
+            return removeFirst();
+        }
+        if (n == tail) {
+            return removeLast();
+        }
+        E data = n.data;
+        n.prev = null;
+        n.next = null;
+        n.data = null;
+        n.prev.next = n.next;
+        n.next.prev = n.prev;
+        size --;
+        return data;
+    }
+
+    public Node<E> get(int index) {
+        if (index < 0 || index >= size) {
+            throw new NoSuchElementException();
+        }
+        return efficientSearch(index);
+    }
+
+    public void set(int index, E value) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+        Node<E> replaceNode = search(index);
+        replaceNode.data = null;
+        replaceNode.data = value;
+    }
+
+    public String toString() {
+        if (head == null || tail == null || size == 0) {
+            return "[]";
+        }
+        Node<E> n = head;
+        int i = 0;
+        Object[] array = new Object[size - 1];
+        while (n != null) {
+            array[i] = (E) n.data;
+            n = n.next;
+            i++;
+        }
+        return Arrays.toString(array);
     }
 
     private static class Node<E>{
