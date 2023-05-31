@@ -1,8 +1,9 @@
 package main.sourcecode.stack;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
-public class MyStack<E> implements StackInterface<E> {
+public class MyStack<E> implements StackInterface<E>, Cloneable {
 
     private static final int DEFAULT_CAPACITY = 10; //최소(기본) Capacity
     private static final Object[] EMPTY_ARRAY = {};
@@ -51,33 +52,76 @@ public class MyStack<E> implements StackInterface<E> {
         return data;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public E pop() {
-        return null;
+        if (size == 0) {
+            throw new NoSuchElementException();
+        }
+        E data = (E) array[size - 1];
+        array[size -1] = null;
+
+        size--;
+        resize();
+        return data;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public E peek() {
-        return null;
+        if (size == 0) {
+            throw new NoSuchElementException();
+        }
+        return (E) array[size-1];
     }
 
     @Override
     public int search(Object value) {
-        return 0;
+        if (value == null) {
+            for (int index = size - 1; index > 0; index--) {
+                if (array[index] == null) {
+                    return size - index;
+                    //자기 자신을 가리킬 때, 즉 거리는 0이 아닌 1부터 시작하므로 size에서 1이 적은 index를 빼서 반환
+                }
+            }
+        } else {
+            for (int index = size - 1; index > 0; index--) {
+                if (array[index] == value) {
+                    return size - index;
+                }
+            }
+        }
+        return -1;
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public void clear() {
-
+        for (int i = 0; i < size; i++) {
+            array[i] = null;
+        }
+        size = 0;
+        resize();
     }
 
     @Override
     public boolean empty() {
-        return false;
+        return size == 0;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        MyStack<E> cloneStack = (MyStack<E>) super.clone();
+        MyStack<?> wildCloneStack = (MyStack<?>) super.clone();
+
+        cloneStack.array = new Object[size];
+        System.arraycopy(array, 0, cloneStack.array, 0, size);
+        cloneStack.resize();
+        return cloneStack;
     }
 }
