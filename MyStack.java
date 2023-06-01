@@ -124,4 +124,20 @@ public class MyStack<E> implements StackInterface<E>, Cloneable {
         cloneStack.resize();
         return cloneStack;
     }
+
+    public Object[] toArray() {
+        return Arrays.copyOf(array, size); //주의할 것은 객체 배열이므로 Arrays.copyOf()를 사용하든, System.arraycopy()를 사용하든 '얕은 복사'에 지나지 않는다.
+    }
+
+    //이미 생성되어있는 배열에 현재 Stack이 가지고 있는 배열에 복사해주고 싶을 경우
+    //*** 단, 상속 관계에 있거나, Wrapper와 같이 유연한 캐스팅이 가능한 경우에만 사용할 수 있음
+    public <T> T[] toArray(T[] a) {
+        //param으로 전달되는 배열의 크기는 알 수 없으므로 분기
+        if (a.length < size) {
+            return (T[]) Arrays.copyOf(array, size, a.getClass());
+            //copyOf() 메서드 내부 뜯어보면 골때리게 머리아프니 나중에 보자
+        }
+        System.arraycopy(array, 0, a, 0, size);
+        return a;
+    }
 }
