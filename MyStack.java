@@ -1,6 +1,7 @@
 package main.sourcecode.stack;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
 public class MyStack<E> implements StackInterface<E>, Cloneable {
@@ -11,6 +12,10 @@ public class MyStack<E> implements StackInterface<E>, Cloneable {
 
     private Object[] array;
     private int size;
+
+    public int getSize() {
+        return size;
+    }
 
     public MyStack() {
         this.array =EMPTY_ARRAY;
@@ -139,5 +144,15 @@ public class MyStack<E> implements StackInterface<E>, Cloneable {
         }
         System.arraycopy(array, 0, a, 0, size);
         return a;
+    }
+
+    public void sort() {
+        array = this.toArray();
+        Arrays.sort(array);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super E> comp) {
+        Arrays.sort((E[])array, comp);
     }
 }
