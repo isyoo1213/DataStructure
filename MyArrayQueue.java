@@ -1,5 +1,8 @@
 package main.sourcecode.queue;
 
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+
 public class MyArrayQueue<E> implements QueueInterface<E>{
 
     private static final int DEFAULT_CAPACITY = 64;
@@ -22,6 +25,31 @@ public class MyArrayQueue<E> implements QueueInterface<E>{
         this.size = 0;
         this.front = 0;
         this.rear = 0;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public boolean contains(Object value) {
+        int start = (front + 1) % array.length;
+        for (int i = 0, index = start; i < size; i++, index = (index + 1) % array.length) {
+            if (array[index].equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void clear() {
+        for (int i = 0; i < array.length; i++) {
+            array[i] = null;
+        }
+        front = rear = size = 0;
     }
 
     private void resize(int newCapacity) {
@@ -54,11 +82,89 @@ public class MyArrayQueue<E> implements QueueInterface<E>{
 
     @Override
     public E poll() {
-        return null;
+        if (size == 0) {
+            return null;
+        }
+        front = (front + 1) % array.length;
+
+        @SuppressWarnings("unchecked")
+        E data = (E) array[front];
+
+        array[front] = null;
+        size--;
+
+        if (array.length > DEFAULT_CAPACITY && size < (array.length / 4)) {
+            resize(Math.max(DEFAULT_CAPACITY, array.length / 2));
+        }
+        return data;
+    }
+
+    public E remove() {
+        E data = poll();
+        if (data == null) {
+            throw new NoSuchElementException();
+        }
+        return data;
     }
 
     @Override
     public E peek() {
-        return null;
+        if (size == 0) {
+            return null;
+        }
+        front = (front + 1) % array.length;
+
+        @SuppressWarnings("unchecked")
+        E data = (E) array[front];
+
+        return data;
+    }
+
+    public E element() {
+        E data = peek();
+        if (data == null) {
+            throw new NoSuchElementException();
+        }
+        return data;
+    }
+
+    public Object[] toArray() {
+        return toArray(new Object[size]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] array) {
+        final T[] res;
+        if (array.length < size) {
+            if (front <= rear) {
+                return (T[]) Arrays.copyOfRange(this.array, front + 1, rear + 1, array.getClass());
+                //arrayQueue의 size만큼(capacity가 아니다)의 length를 가지는 array를 반환
+                //by Araays.copyOfRange() 내부의 Math.min(original - from, to - from)
+            }
+            res = (T[]) Arrays.copyOfRange(this.array, 0, size, array.getClass());
+            int rearPartLength = this.array.length - front - 1; //length와 index
+
+            // ** rearPartLength가 0일 경우 - front가 마지막 index에 존재하고 실제 데이터는 index 0부터 포함되어있는 경우
+            // 즉, array의 뒷부분에 실질적인 데이터가 들어가있는 경우를 분기 -> 해당 부분 복사 필요
+            if (rearPartLength > 0) {
+                System.arraycopy(this.array, front + 1, res, 0, rearPartLength);
+            }
+            // rearPartLength가 0인 경우 + 앞부분 복사하기
+            System.arraycopy(this.array, 0, res, rearPartLength, rear + 1);
+            //메서드 뜯어보면서 params의 의미 따져보면 정확함
+
+            return res;
+        }
+
+        if (front <= rear) {
+            System.arraycopy(this.array, front + 1, array, 0,  size);
+        } else {
+            int rearpartLength = this.array.length - front - 1;
+            if (rearpartLength > 0) {
+                System.arraycopy(this.array, front + 1, array, 0, rearpartLength);
+            }
+            System.arraycopy(this.array, 0, array, rearpartLength, rear+1);
+        }
+        return array;
     }
 }
