@@ -1,9 +1,10 @@
 package main.sourcecode.queue;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
-public class MyArrayQueue<E> implements QueueInterface<E>{
+public class MyArrayQueue<E> implements QueueInterface<E>, Cloneable{
 
     private static final int DEFAULT_CAPACITY = 64;
 
@@ -166,5 +167,43 @@ public class MyArrayQueue<E> implements QueueInterface<E>{
             System.arraycopy(this.array, 0, array, rearpartLength, rear+1);
         }
         return array;
+    }
+
+    //*** arrayQueue 자체를 가리키는 객체는 깊은 복사가 되지만, 내부의 요소들은 기존 arrayQueue의 필드와 같은 주소를 참조한다
+    @Override
+    public Object clone() {
+        try {
+            @SuppressWarnings("unchecked")
+            MyArrayQueue<E> cloneArrayQueue = (MyArrayQueue<E>) super.clone();
+            cloneArrayQueue.array = Arrays.copyOf(array, array.length);
+            return cloneArrayQueue;
+        } catch (CloneNotSupportedException e) {
+            throw new Error(e);
+        }
+    }
+
+    public void sort() {
+        //** sort(comparator)에서 toArray() 호출을 통해 array의 size에 맞게끔 배열을 다시 resizing하므로 null값인 요소를 고려하지 않아도 됨
+        sort(null);
+    }
+
+    public void sort(Comparator<? super E> comparator) {
+        //capacity와 size의 차이로 인한 null 요소를 방지하기 위해 size만큼의 사이즈 배열을 반환하는 toArray()로 배열화
+        // * arrayQueue가 꽉 차있다고 하더라도, front의 존재로 최소 1개의 인덱스는 null을 가지고 있다
+        Object[] res = toArray();
+
+        //Comparator<? super E> comparator를 param으로 받는 sorting을 한번에 처리하기 위해 Object[]을 E[]로 캐스팅 해준다
+        Arrays.sort((E[]) res, 0, size, comparator);
+
+        //front의 존재로 array의 0 인덱스를 사용할 수 없으므로 이를 처리하기 위한 과정
+        clear();
+
+        // *** res.length는 size + 1 임을 꼭 인식해야 한다
+        // 즉, front를 포함하기 위해 array의 capacity는 size + 1 만큼 복사됨
+        System.arraycopy(res, 0, array, 1, res.length);
+
+        this.rear = this.size = res.length;
+        //array.length == res.length + 1 == size + 1
+        // -> array의 rear는 가장 마지막 인덱스, 즉 size이자 res.length와 같다
     }
 }
