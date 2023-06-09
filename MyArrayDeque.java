@@ -1,8 +1,10 @@
 package main.sourcecode.queue;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
-public class MyArrayDeque<E> implements QueueInterface<E> {
+public class MyArrayDeque<E> implements QueueInterface<E>, Cloneable {
 
     private static final int DEFAULT_CAPACITY = 64;
     private Object[] array;
@@ -201,6 +203,66 @@ public class MyArrayDeque<E> implements QueueInterface<E> {
             throw new NoSuchElementException();
         }
         return data;
+    }
+
+    public Object[] toArray() {
+        return toArray(new Object[size]);
+        //기존 array를 그대로 넣지 않는 이유
+        //1. 자기 자신의 배열 공간에 복사 과정이 이루어지므로 각 단계에서 원본 훼손 가능성
+        //2. size와 capacity가 다르므로 null이 포함된 array를 그대로 반환 -> 이후 sort()에서 문제 발생 가능성
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] a) {
+        T[] res;
+        if (a.length < size) {
+            if (front < rear) {
+                return (T[]) Arrays.copyOfRange(array, front + 1, rear + 1, a.getClass());
+            }
+            res = (T[]) Arrays.copyOfRange(array, 0, size, a.getClass());
+            int rearPartLength = array.length - 1 - front; // array.length - 1 은 index로 표현하기 위한 방식으로 접근해도 가능
+
+            if (rearPartLength > 0) {
+                System.arraycopy(array, front + 1, res, 0, rearPartLength);
+            }
+            System.arraycopy(array, 0, res, rearPartLength, size - rearPartLength);
+            return res;
+        }
+        if (front < rear) {
+            System.arraycopy(array, front + 1, a, 0, size);
+        } else {
+            int rearPartLength = array.length - 1 - front;
+            if (rearPartLength > 0) {
+                System.arraycopy(array, front + 1, a, 0, rearPartLength);
+            }
+            System.arraycopy(array, 0, a, rearPartLength, size - rearPartLength);
+        }
+        return a;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object clone() {
+        try {
+            MyArrayDeque<E> newDeque = (MyArrayDeque<E>) super.clone();
+            newDeque.array = Arrays.copyOf(array, array.length);
+            return newDeque;
+        } catch (CloneNotSupportedException e) {
+            throw new Error(e);
+        }
+    }
+
+    public void sort() {
+        sort(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super E> comparator) {
+        Object[] res = toArray();
+        Arrays.sort((E[]) res, 0, size, comparator); //comparator 사용을 위해 E[] 형으로 다운캐스팅 해주는 것에 유의 by array의 공변성
+        clear();
+        System.arraycopy(res, 0, array, 1, res.length); //결과적으로 array에는 최소 res.length + 1 만큼의 capacity를 가지게 됨 (front의 존재)
+        this.rear = this.size = res.length;
     }
 
 }
