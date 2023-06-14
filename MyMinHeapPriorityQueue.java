@@ -1,5 +1,6 @@
 package main.sourcecode.queue;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 
@@ -28,6 +29,30 @@ public class MyMinHeapPriorityQueue<E> implements QueueInterface<E> {
         this.array = new Object[capacity];
         this.size = 0;
         this.comparator = comparator;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public boolean contains(Object value) {
+        for (int i = 1; i <= size; i++) {
+            if (array[i].equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void clear() {
+        for (int i = 0; i < array.length; i++) {
+            array[i] = null;
+        }
+        size = 0;
     }
 
     private int getParent(int index) {
@@ -178,8 +203,38 @@ public class MyMinHeapPriorityQueue<E> implements QueueInterface<E> {
         return remove();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public E peek() {
-        return null;
+        if (array[1] == null) {
+            throw new NoSuchElementException();
+        }
+        return (E) array[1];
+    }
+
+    public Object[] toArray() {
+        return toArray(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[]  toArray(T[] a) {
+        if (a.length <= size) {
+            return (T[]) Arrays.copyOfRange(array, 1, size + 1, a.getClass());
+        }
+        System.arraycopy(array, 1, a, 0, size);
+        return a;
+    }
+
+    public Object clone() {
+        try {
+            MyMinHeapPriorityQueue<?> clone = (MyMinHeapPriorityQueue<?>) super.clone();
+            clone.array = new Object[size + 1];
+            for (int i = 0; i <= size; i++) {
+                clone.array[i] = array[i];
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new Error(e);
+        }
     }
 }
