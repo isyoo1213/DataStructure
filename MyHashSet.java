@@ -162,4 +162,33 @@ public class MyHashSet<E> implements MySet<E> {
             size = 0;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MyHashSet)) {
+            return false;
+        }
+        MyHashSet<E> oSet;
+        try {
+            oSet = (MyHashSet<E>) o;
+            if (oSet.size() != size) {
+                return false;
+            }
+            for (int i = 0; i < oSet.table.length; i++) {
+                Node<E> oTemp = oSet.table[i];
+                while (oTemp != null) {
+                    if (!contains(oTemp)) {
+                        return false;
+                    }
+                    oTemp = oTemp.next;
+                }
+            }
+        } catch (ClassCastException e) {
+            return false;
+        }
+        return true;
+    }
 }
