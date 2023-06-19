@@ -1,5 +1,7 @@
 package main.sourcecode.set;
 
+import java.util.Arrays;
+
 public class MyHashSet<E> implements MySet<E> {
 
     private final int DEFAULT_CAPACITY = 1 << 4;
@@ -153,7 +155,8 @@ public class MyHashSet<E> implements MySet<E> {
         // + 중요한 점은, *** 실제 인덱스들의 주소에 데이터를 할당해주지 않아도 참조주소 자체는 null이 아닌 0번째 인덱스의 메모리 주소를 가지고 있다는 점이다.
         // + 현재 table이 null이 가능한 경우는 clear()를 통해 '명시적'으로 null을 할당한 경우에만 국한된다.
         // 왜냐하면, 생성자에서 table이 기본적으로 new 생성자를 통해 생성된 상태이므로, 자연적으로 null로 초기화되는 경우의 수는 없다.
-        // 따라서, table에 자료가 적재되어있는 경우를 판단하기 위해서는 단순히 null이 아닌 size에 대한 판별까지 or가 아닌 and로 구성해주어야한다.
+        // 따라서 실제로는, table에 자료가 적재되어있는 경우를 판단하기 위해서는 단순히 null이 아닌 size에 대한 판별까지 or가 아닌 and로 구성해주어야한다.
+        // + for문을 돌리는 기준이 table.length이므로, 빈 배열 또한 기본 capacity만큼 null 할당 반복이 일어나므로 명확하게 처리해주는 것이 좋음
         if (table != null && size > 0) {
 
             for (int i = 0; i < table.length; i++) {
@@ -190,5 +193,29 @@ public class MyHashSet<E> implements MySet<E> {
             return false;
         }
         return true;
+    }
+
+    public Object[] toArray() {
+        Object[] ret = new Object[size];
+        int index = 0;
+        for (int i = 0; i < table.length; i++) {
+            Node<E> n = table[i];
+            while (n != null) {
+                ret[index] = n.key;
+                index++;
+                n = n.next;
+            }
+        }
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] a) {
+        Object[] copy = toArray();
+        if (a.length < size) {
+            return (T[]) Arrays.copyOf(copy, size, a.getClass());
+        }
+        System.arraycopy(copy, 0, a, 0, size);
+        return a;
     }
 }
