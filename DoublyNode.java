@@ -4,11 +4,11 @@ public class DoublyNode<E> {
     final int hash;
     final E key;
 
-    Node<E> next; //for separating chaining
-    Node<E> nextLink;
-    Node<E> prevLink;
+    DoublyNode<E> next; //for separating chaining
+    DoublyNode<E> nextLink;
+    DoublyNode<E> prevLink;
 
-    public DoublyNode(int hash, E key, Node<E> next) {
+    public DoublyNode(int hash, E key, DoublyNode<E> next) {
         this.hash = hash;
         this.key = key;
         this.next = next;
