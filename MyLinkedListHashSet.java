@@ -104,9 +104,55 @@ public class MyLinkedListHashSet<E> implements MySet<E> {
         return add(hash(e), e) == null;
     }
 
+    private void unlinkNode(DoublyNode<E> o) {
+        DoublyNode<E> prevNode = o.prevLink;
+        DoublyNode<E> nextNode = o.nextLink;
+
+        if (prevNode == null) {
+            head = nextNode;
+        } else {
+            prevNode.nextLink = nextNode;
+            o.prevLink = null;
+        }
+        if (nextNode == null) {
+            tail = prevNode;
+        } else {
+            nextNode.prevLink = prevNode;
+            o.nextLink = null;
+        }
+    }
+
+    private Object remove(int hash, Object key) {
+        int index = hash % table.length;
+        DoublyNode<E> node = table[index];
+        DoublyNode<E> removeNode = null;
+        DoublyNode<E> prevNode = null;
+
+        if (node == null) {
+            return null;
+        }
+        while (node != null) {
+            if (node.hash == hash && (node.key == key || node.key.equals(key))) {
+                removeNode = node;
+                if (prevNode == null) {
+                    table[index] = node.next;
+                } else {
+                    prevNode.next = node.next;
+                }
+                unlinkNode(node);
+                node = null;
+                size--;
+                break;
+            }
+            prevNode = node;
+            node = node.next;
+        }
+        return removeNode;
+    }
+
     @Override
     public boolean remove(Object o) {
-        return false;
+        return remove(hash(o), o) != null;
     }
 
     @Override
