@@ -157,21 +157,68 @@ public class MyLinkedListHashSet<E> implements MySet<E> {
 
     @Override
     public boolean contains(Object o) {
+        int index = hash(o) % table.length;
+        DoublyNode<E> tempNode = table[index];
+        if (tempNode == null) {
+            return false;
+        }
+        while (tempNode != null) {
+            if (tempNode.hash == hash(o) && tempNode.key == o || tempNode.key.equals(o)) {
+                return true;
+            }
+            tempNode = tempNode.next;
+        }
         return false;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public void clear() {
+        if (table != null && size > 0) {
+            for (int i = 0; i < table.length; i++) {
+                table[i] = null;
+            }
+            size = 0;
+        }
+        head = tail = null;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MyLinkedListHashSet)) {
+            return false;
+        }
+        MyLinkedListHashSet<E> oSet;
+
+        try {
+            oSet = (MyLinkedListHashSet<E>) o;
+            if (oSet.size != size()) {
+                return false;
+            }
+            for (int i = 0; i < oSet.table.length; i++) {
+                DoublyNode<E> oNode = oSet.table[i];
+                while (oNode != null) {
+                    if (!contains(oNode)) {
+                        return false;
+                    }
+                }
+                oNode = oNode.next;
+            }
+        } catch (ClassCastException e) {
+            return false;
+        }
+        return true;
     }
 }
