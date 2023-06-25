@@ -23,7 +23,7 @@ public class MyBinarySearchTree<E> {
         if (comparator == null) {
             return addUsingComparable(value) == null;
         }
-        //return addusingComparator(value, this.comparator) == null; //아직 미구현
+        return addusingComparator(value, this.comparator) == null;
     }
 
     private E addUsingComparable(E value) {
@@ -57,6 +57,39 @@ public class MyBinarySearchTree<E> {
             current.left = newNode;
         } else {
             current.right = newNode;
+        }
+        size++;
+        return null;
+    }
+
+    private E addusingComparator(E value, Comparator<? super E> comparator) {
+        Node<E> current = root;
+        if (current == null) {
+            root = new Node<>(value, null);
+            size++;
+            return null;
+        }
+
+        Node<E> currentParent;
+        int compResult;
+
+        do {
+            currentParent = current;
+            compResult = comparator.compare(value, current.value);
+            if (compResult < 0) {
+                current = current.left;
+            } else if (compResult > 0) {
+                current = current.right;
+            } else {
+                return value;
+            }
+        } while (current != null);
+
+        Node<E> newNode = new Node<E>(value, currentParent);
+        if (compResult < 0) {
+            currentParent.left = newNode;
+        } else {
+            currentParent.right = newNode;
         }
         size++;
         return null;
