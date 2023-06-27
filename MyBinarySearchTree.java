@@ -159,4 +159,126 @@ public class MyBinarySearchTree<E> {
         return node;
     }
 
+    private E removeUsingComparable(Object value) {
+        @SuppressWarnings("unchecked")
+        E oldValue = (E) value;
+        Node<E> parent = null;
+        Node<E> current = root;
+        boolean hasLeft = false;
+
+        if (root == null) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        Comparable<? super E> compValue = (Comparable<? super E>) value;
+
+        do {
+            int resComp = compValue.compareTo(current.value);
+            if (resComp == 0) {
+                break;
+            }
+            parent = current;
+            if (resComp < 0) {
+                hasLeft = true;
+                current = current.left;
+            } else {
+                hasLeft = false;
+                current = current.right;
+            }
+        } while (current != null);
+
+        if (current == null) {
+            return null;
+        }
+
+        if (parent == null) {
+            deleteNode(current);
+            size--;
+            return oldValue;
+        }
+
+        //삭제할 노드가 왼쪽 노드라면
+        if (hasLeft) {
+            parent.left = deleteNode(current);
+            if (parent.left != null) {
+                parent.left.parent = parent;
+            }
+        } else {
+            parent.right = deleteNode(current);
+            if (parent.right != null) {
+                parent.right.parent = parent;
+            }
+        }
+
+        size--;
+        return oldValue;
+    }
+
+    private E removeUsingComparator(Object value, Comparator<? super E> comparator) {
+        @SuppressWarnings("unchecked")
+        E oldValue = (E) value;
+        Node<E> parent = null;
+        Node<E> current = root;
+        boolean hasLeft = false;
+
+        if (root == null) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        E compValue = (E) value;
+
+        do {
+            int resComp = comparator.compare(compValue, current.value);
+            if (resComp == 0) {
+                break;
+            }
+
+            parent = current;
+            if (resComp < 0) {
+                hasLeft = true;
+                current = current.left;
+            } else {
+                hasLeft = false;
+                current = current.right;
+            }
+        } while (current != null);
+
+        if (current == null) {
+            return null;
+        }
+
+        if (parent == null) {
+            deleteNode(current);
+            size--;
+            return oldValue;
+        }
+
+        if (hasLeft) {
+            parent.left = deleteNode(current);
+            if (parent.left != null) {
+                parent.left.parent = parent;
+            }
+        } else {
+            parent.right = deleteNode(current);
+            if (parent.right != null) {
+                parent.right.parent = parent;
+            }
+        }
+        size--;
+        return oldValue;
+    }
+
+    public E remove(Object o) {
+        if (root == null) {
+            return null;
+        }
+        if (comparator == null) {
+            return removeUsingComparable(o);
+        } else {
+            return removeUsingComparator(o, this.comparator);
+        }
+    }
+
 }
