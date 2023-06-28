@@ -19,6 +19,60 @@ public class MyBinarySearchTree<E> {
         this.size = 0;
     }
 
+    public int size() {
+        return this.size;
+    }
+
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    public boolean contains(Object o) {
+        if (comparator == null) {
+            return containsUsingComparable(o);
+        }
+        return containsUsingComparator(o, comparator);
+    }
+
+    private boolean containsUsingComparable(Object o) {
+        @SuppressWarnings("unchecked")
+        Comparable<? super E> value = (Comparable<? super E>) o;
+        Node<E> node = root;
+        while (node != null) {
+            int res = value.compareTo(node.value);
+            if (res < 0) {
+                node = node.left;
+            } else if (res == 0) {
+                return true;
+            } else {
+                node = node.right;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsUsingComparator(Object o, Comparator<? super E> comparator) {
+        @SuppressWarnings("unchecked")
+        E value = (E) o;
+        Node<E> node = root;
+        while (node != null) {
+            int res = comparator.compare(value, node.value);
+            if (res < 0) {
+                node = node.left;
+            } else if (res == 0) {
+                return true;
+            } else {
+                node = node.right;
+            }
+        }
+        return false;
+    }
+
+    public void clear() {
+        size = 0;
+        root = null;
+    }
+
     public boolean add(E value) {
         if (comparator == null) {
             return addUsingComparable(value) == null;
