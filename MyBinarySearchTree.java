@@ -335,4 +335,49 @@ public class MyBinarySearchTree<E> {
         }
     }
 
+    /**
+     * 전위 순회
+     */
+    public void preorder() {
+        preorder(this.root);
+    }
+
+    public void preorder(Node<E> o) {
+        //null이 아닐 때까지 재귀적으로 순회
+        if (o != null) {
+            System.out.println(o.value + ""); //부모 노드
+            preorder(o.left);
+            preorder(o.right);
+        }
+    }
+
+    /**
+     * 중위 순회
+     */
+    public void inorder() {
+        inorder(this.root);
+    }
+
+    public void inorder(Node<E> o) {
+        if (o != null) {
+            inorder(o.left);
+            System.out.println(o.value + "");
+            inorder(o.right);
+        }
+    }
+
+    /**
+     * 후위 순회
+     */
+    public void postorder() {
+        postorder(this.root);
+    }
+
+    public void postorder(Node<E> o) {
+        if (o != null) {
+            postorder(o.left);
+            postorder(o.right);
+            System.out.println(o.value + "");
+        }
+    }
 }
