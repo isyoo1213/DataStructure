@@ -1,5 +1,7 @@
 package main.sourcecode.set;
 
+import java.util.Arrays;
+
 public class MyLinkedListHashSet<E> implements MySet<E> {
 
     private static final int DEFAULT_CAPACITY = 1 << 4;
@@ -220,5 +222,28 @@ public class MyLinkedListHashSet<E> implements MySet<E> {
             return false;
         }
         return true;
+    }
+
+    public Object[] toArray() {
+        if (table == null || head == null) {
+            return null;
+        }
+        Object[] ret = new Object[size];
+        int index = 0;
+        for (DoublyNode<E> n = head; n != null; n = n.nextLink) {
+            ret[index] = n.key;
+            index++;
+        }
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] a) {
+        Object[] tableArray = toArray();
+        if (a.length < tableArray.length) {
+            return (T[]) Arrays.copyOf(tableArray, size, a.getClass());
+        }
+        System.arraycopy(tableArray, 0, a, 0, size);
+        return a;
     }
 }
