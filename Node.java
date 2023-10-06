@@ -1,13 +1,19 @@
-package main.sourcecode.set;
+package main.sourcecode.tree;
 
 public class Node<E> {
-    final int hash;
-    final E key;
-    Node<E> next;
+    E value;
+    Node<E> left;
+    Node<E> right;
+    Node<E> parent;
 
-    public Node(int hash, E key, Node<E> next) {
-        this.hash = hash;
-        this.key = key;
-        this.next = next;
+    Node(E value) {
+        this(value, null);
+    }
+
+    Node(E value, Node<E> parent) {
+        this.value = value;
+        this.parent = parent;
+        this.left = null;
+        this.right = null;
     }
 }
